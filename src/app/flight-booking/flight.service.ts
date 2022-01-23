@@ -3,13 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Flight } from './flight';
 // import { DefaultFlightService } from './default-flight.service';
-import { DummyFlightService } from './dummy-flight.service';
+// import { DummyFlightService } from './dummy-flight.service';
 
-@Injectable({
+@Injectable(/*{
   providedIn: 'root',
   // useClass: DefaultFlightService,
   useClass: DummyFlightService
-})
+}*/)
 export abstract class FlightService {
   flights: Flight[] = [];
   readonly flightsSubject = new BehaviorSubject<Flight[]>([]);
