@@ -1,12 +1,21 @@
-import { Directive, ElementRef, OnInit } from '@angular/core';
+import { Directive, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 
 @Directive({
   selector: '[appClickWithWarning]'
 })
-export class ClickWithWarningDirective implements OnInit {
-  constructor(private elementRef: ElementRef) {}
+export class ClickWithWarningDirective {
+  // add Input and Output
+  @Input() warning = 'Are you sure?';
+  @Output() appClickWithWarning = new EventEmitter<void>();
 
-  ngOnInit(): void {
-    this.elementRef.nativeElement.setAttribute('class', 'btn btn-danger');
+  // add HostBinding
+  @HostBinding('class') classBinding = 'btn btn-danger';
+
+  // add HostListener
+  @HostListener('click', ['$event.shiftKey'])
+  handleClick(shiftKey: boolean): void {
+    if (shiftKey || confirm(this.warning)) {
+      this.appClickWithWarning.emit();
+    }
   }
 }
