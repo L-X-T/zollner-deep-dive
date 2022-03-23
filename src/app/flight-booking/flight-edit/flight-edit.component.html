@@ -47,6 +47,8 @@
 
   <app-flight-validation-errors [errors]="editForm.controls.date.errors" fieldLabel="Date" />
 
+  <app-flight-validation-errors [errors]="editForm.errors" fieldLabel="Form" />
+
   <div class="form-group">
     <button (click)="save()" class="btn btn-default">Save</button>
   </div>
