@@ -2,12 +2,12 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay } from 'rxjs/operators';
+import { debounceTime, delay, distinctUntilChanged } from 'rxjs/operators';
 import { Observable, Observer, Subscription } from 'rxjs';
 import { CanComponentDeactivate } from '../../shared/deactivation/can-deactivate.guard';
 import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-flight-edit',
@@ -27,18 +27,16 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
   flight: Flight | undefined;
   flightSubscription?: Subscription;
 
-  editForm: FormGroup;
+  editForm = this.fb.group({
+    id: [0, Validators.required],
+    from: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
+    to: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
+    date: ['', [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
+  });
 
   valueChangesSubscription?: Subscription;
 
-  constructor(private flightService: FlightService, private route: ActivatedRoute, private fb: FormBuilder, private router: Router) {
-    this.editForm = this.fb.group({
-      id: [1],
-      from: [''],
-      to: [''],
-      date: ['']
-    });
-  }
+  constructor(private fb: FormBuilder, private flightService: FlightService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     console.log(this.router.url);
@@ -86,9 +84,14 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
     console.log('touched', this.editForm.touched);
     console.log('dirty', this.editForm.dirty);
 
-    this.valueChangesSubscription = this.editForm.valueChanges.subscribe((v) => {
-      console.debug('valueChanges', v);
-    });
+    this.valueChangesSubscription = this.editForm.valueChanges
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged((f, t) => f.id === t.id && f.from === t.from && f.to === t.to && f.date === t.date)
+      )
+      .subscribe((v) => {
+        console.debug('valueChanges', v);
+      });
   }
 
   ngOnDestroy(): void {
