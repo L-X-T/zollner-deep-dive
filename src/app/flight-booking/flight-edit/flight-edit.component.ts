@@ -1,19 +1,20 @@
 // src/app/flight-booking/flight-edit/flight-edit.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { delay } from 'rxjs/operators';
 import { Observable, Observer, Subscription } from 'rxjs';
 import { CanComponentDeactivate } from '../../shared/deactivation/can-deactivate.guard';
 import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-flight-edit',
   templateUrl: './flight-edit.component.html',
   styleUrls: ['./flight-edit.component.scss']
 })
-export class FlightEditComponent implements OnInit, CanComponentDeactivate {
+export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   isLoading = true;
   isLoaded = false;
 
@@ -26,7 +27,18 @@ export class FlightEditComponent implements OnInit, CanComponentDeactivate {
   flight: Flight | undefined;
   flightSubscription?: Subscription;
 
-  constructor(private flightService: FlightService, private route: ActivatedRoute, private router: Router) {}
+  editForm: FormGroup;
+
+  valueChangesSubscription?: Subscription;
+
+  constructor(private flightService: FlightService, private route: ActivatedRoute, private fb: FormBuilder, private router: Router) {
+    this.editForm = this.fb.group({
+      id: [1],
+      from: [''],
+      to: [''],
+      date: ['']
+    });
+  }
 
   ngOnInit(): void {
     console.log(this.router.url);
@@ -49,6 +61,7 @@ export class FlightEditComponent implements OnInit, CanComponentDeactivate {
     // no resolver!
     /*this.route.data.subscribe((data) => {
       this.flight = data.flight;
+      this.editForm.patchValue(data.flight);
     });*/
 
     // instead we load this here and use a loading spinner!
@@ -59,6 +72,7 @@ export class FlightEditComponent implements OnInit, CanComponentDeactivate {
         next: (flight) => {
           this.isLoading = false;
           this.flight = flight;
+          this.editForm.patchValue(flight);
           this.isLoaded = true;
         },
         error: (flight) => {
@@ -66,6 +80,21 @@ export class FlightEditComponent implements OnInit, CanComponentDeactivate {
           this.isLoaded = false;
         }
       });
+
+    console.log('value', this.editForm.value);
+    console.log('valid', this.editForm.valid);
+    console.log('touched', this.editForm.touched);
+    console.log('dirty', this.editForm.dirty);
+
+    this.valueChangesSubscription = this.editForm.valueChanges.subscribe((v) => {
+      console.debug('valueChanges', v);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.flightSubscription?.unsubscribe();
+    this.valueChangesSubscription?.unsubscribe();
+    this.valueChangesSubscription?.unsubscribe();
   }
 
   onRoute(): void {
@@ -88,5 +117,9 @@ export class FlightEditComponent implements OnInit, CanComponentDeactivate {
       this.sender = sender;
       this.showWarning = true;
     });
+  }
+
+  save(): void {
+    console.log(this.editForm?.value);
   }
 }
