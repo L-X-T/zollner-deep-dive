@@ -8,6 +8,8 @@ import { FlightService } from './flight.service';
   providedIn: 'root'
 })
 export class DefaultFlightService implements FlightService {
+  url = 'http://www.angular.at/api/flight';
+
   flights: Flight[] = [];
   readonly flightsSubject = new BehaviorSubject<Flight[]>([]);
   readonly flights$ = this.flightsSubject.asObservable();
@@ -49,18 +51,22 @@ export class DefaultFlightService implements FlightService {
   }
 
   find(from: string, to: string): Observable<Flight[]> {
-    const url = 'http://www.angular.at/api/flight';
     const headers = new HttpHeaders().set('Accept', 'application/json');
     const params = new HttpParams().set('from', from).set('to', to);
 
-    return this.http.get<Flight[]>(url, { headers, params });
+    return this.http.get<Flight[]>(this.url, { headers, params });
   }
 
   findById(id: string): Observable<Flight> {
-    const url = 'http://www.angular.at/api/flight';
     const headers = new HttpHeaders().set('Accept', 'application/json');
     const params = new HttpParams().set('id', id);
 
-    return this.http.get<Flight>(url, { headers, params });
+    return this.http.get<Flight>(this.url, { headers, params });
+  }
+
+  save(flight: Flight): Observable<Flight> {
+    const headers = new HttpHeaders().set('Accept', 'application/json');
+
+    return this.http.post<Flight>(this.url, flight, { headers });
   }
 }

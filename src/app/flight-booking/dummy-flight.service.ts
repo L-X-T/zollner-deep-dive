@@ -8,6 +8,8 @@ import { FlightService } from './flight.service';
   providedIn: 'root'
 })
 export class DummyFlightService implements FlightService {
+  url = 'http://www.angular.at/api/flight';
+
   flights: Flight[] = [];
   readonly flightsSubject = new BehaviorSubject<Flight[]>([]);
   readonly flights$ = this.flightsSubject.asObservable();
@@ -57,6 +59,14 @@ export class DummyFlightService implements FlightService {
   }
 
   findById(id: string): Observable<Flight> {
+    return of(
+      { id: 1, from: 'Frankfurt', to: 'Flagranti', date: '2022-01-02T19:00+01:00' },
+      { id: 2, from: 'Frankfurt', to: 'Kognito', date: '2022-01-02T19:30+01:00' },
+      { id: 3, from: 'Frankfurt', to: 'Mallorca', date: '2022-01-02T20:00+01:00' }
+    );
+  }
+
+  save(flight: Flight): Observable<Flight> {
     return of(
       { id: 1, from: 'Frankfurt', to: 'Flagranti', date: '2022-01-02T19:00+01:00' },
       { id: 2, from: 'Frankfurt', to: 'Kognito', date: '2022-01-02T19:30+01:00' },

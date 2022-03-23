@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Flight } from './flight';
 
@@ -12,6 +12,8 @@ import { DefaultFlightService } from './default-flight.service';
   deps: [HttpClient]
 })
 export abstract class FlightService {
+  url = 'http://www.angular.at/api/flight';
+
   flights: Flight[] = [];
   readonly flightsSubject = new BehaviorSubject<Flight[]>([]);
   readonly flights$ = this.flightsSubject.asObservable();
@@ -55,4 +57,6 @@ export abstract class FlightService {
   abstract find(from: string, to: string): Observable<Flight[]>;
 
   abstract findById(id: string): Observable<Flight>;
+
+  abstract save(flight: Flight): Observable<Flight>;
 }

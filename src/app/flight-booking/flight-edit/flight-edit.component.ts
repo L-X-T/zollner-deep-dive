@@ -129,6 +129,21 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
   }
 
   save(): void {
-    console.log(this.editForm?.value);
+    this.flight = {
+      ...this.flight,
+      ...this.editForm.value
+    } as Flight;
+
+    if (!this.flight.id) {
+      this.flight.id = 0;
+    }
+
+    console.log('saving...');
+    console.log(this.flight);
+
+    this.flightService.save(this.flight).subscribe((flight) => {
+      this.flight = flight;
+      this.editForm.patchValue(flight);
+    });
   }
 }
