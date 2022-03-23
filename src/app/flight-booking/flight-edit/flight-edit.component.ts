@@ -7,7 +7,7 @@ import { Observable, Observer, Subscription } from 'rxjs';
 import { CanComponentDeactivate } from '../../shared/deactivation/can-deactivate.guard';
 import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { validateCity } from '../../shared/validation/city-validator';
 import { validateAsyncCity } from '../../shared/validation/async-city-validator';
 import { validateRoundTrip } from '../../shared/validation/round-trip-validator';
@@ -34,14 +34,29 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
   editForm = this.fb.group(
     {
       id: [0, Validators.required],
-      from: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)], validateAsyncCity(this.flightService)],
+      from: [
+        '',
+        {
+          asyncValidators: validateAsyncCity(this.flightService),
+          validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)],
+          updateOn: 'blur'
+        }
+      ],
       to: [
         '',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(3),
+            Validators.maxLength(15),
+            validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])
+          ],
+          updateOn: 'blur'
+        }
       ],
       date: ['', [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
     },
-    { asyncValidators: validateAsyncMulti(this.flightService), validators: validateRoundTrip }
+    { asyncValidators: validateAsyncMulti(this.flightService), validators: validateRoundTrip, updateOn: 'change' }
   );
 
   valueChangesSubscription?: Subscription;
@@ -128,21 +143,32 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
   }
 
   save(): void {
+    if (this.editForm.invalid) {
+      this.markFormGroupDirty(this.editForm);
+      return;
+    }
+
     this.flight = {
       ...this.flight,
       ...this.editForm.value
     } as Flight;
 
-    if (!this.flight.id) {
-      this.flight.id = 0;
+    if (this.flight) {
+      if (!this.flight.id) {
+        this.flight.id = 0;
+      }
+
+      console.log('saving...');
+      console.log(this.flight);
+
+      this.flightService.save(this.flight).subscribe((flight) => {
+        this.flight = flight;
+        this.editForm.patchValue(flight);
+      });
     }
+  }
 
-    console.log('saving...');
-    console.log(this.flight);
-
-    this.flightService.save(this.flight).subscribe((flight) => {
-      this.flight = flight;
-      this.editForm.patchValue(flight);
-    });
+  private markFormGroupDirty(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((c) => c.markAsDirty());
   }
 }
