@@ -8,6 +8,7 @@ import { CanComponentDeactivate } from '../../shared/deactivation/can-deactivate
 import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
 import { FormBuilder, Validators } from '@angular/forms';
+import { validateCity } from '../../shared/validation/city-validator';
 
 @Component({
   selector: 'app-flight-edit',
@@ -29,8 +30,8 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
 
   editForm = this.fb.group({
     id: [0, Validators.required],
-    from: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
-    to: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
+    from: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity]],
+    to: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity]],
     date: ['', [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
   });
 
