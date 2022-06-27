@@ -1,5 +1,3 @@
-// src/app/default-flight.service.ts
-
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -15,29 +13,40 @@ export class FlightService {
   constructor(private http: HttpClient) {}
 
   load(from: string, to: string): void {
-    this.find(from, to).subscribe({
+    const unhandledSubscription = this.find(from, to).subscribe({
       next: (flights) => {
         this.flights = flights;
       },
       error: (err) => {
-        console.error('error', err);
+        console.error('Error loading flights', err);
       }
     });
   }
 
   find(from: string, to: string): Observable<Flight[]> {
     const url = 'http://www.angular.at/api/flight';
-
     const headers = new HttpHeaders().set('Accept', 'application/json');
-
     const params = new HttpParams().set('from', from).set('to', to);
 
     return this.http.get<Flight[]>(url, { headers, params });
   }
 
+  findById(id: string): Observable<Flight> {
+    const url = 'http://www.angular.at/api/flight';
+    const headers = new HttpHeaders().set('Accept', 'application/json');
+    const params = new HttpParams().set('id', id);
+
+    return this.http.get<Flight>(url, { headers, params });
+  }
+
   delay(): void {
-    const date = new Date(this.flights[0].date);
-    date.setTime(date.getTime() + 1000 * 60 * 15);
-    this.flights[0].date = date.toISOString();
+    const ONE_MINUTE = 1000 * 60;
+    const oldFlights = this.flights;
+    const oldFlight = oldFlights[0];
+    const oldDate = new Date(oldFlight.date);
+
+    // Mutable
+    oldDate.setTime(oldDate.getTime() + 15 * ONE_MINUTE);
+    oldFlight.date = oldDate.toISOString();
   }
 }
