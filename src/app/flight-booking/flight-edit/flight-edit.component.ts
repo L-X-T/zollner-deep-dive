@@ -9,6 +9,7 @@ import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { validateCity } from '../../shared/validation/city-validator';
+import { validateAsyncCity } from '../../shared/validation/async-city-validator';
 
 @Component({
   selector: 'app-flight-edit',
@@ -30,10 +31,7 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
 
   editForm = this.fb.group({
     id: [0, Validators.required],
-    from: [
-      '',
-      [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]
-    ],
+    from: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)], validateAsyncCity(this.flightService)],
     to: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]],
     date: ['', [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
   });

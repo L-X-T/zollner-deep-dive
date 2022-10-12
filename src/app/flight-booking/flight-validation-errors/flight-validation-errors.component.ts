@@ -8,5 +8,6 @@ import { ValidationErrors } from '@angular/forms';
 })
 export class FlightValidationErrorsComponent {
   @Input() errors: ValidationErrors | null | undefined;
+  @Input() pending = false;
   @Input() fieldLabel = '';
 }
