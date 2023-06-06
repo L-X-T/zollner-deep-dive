@@ -5,6 +5,7 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { BasketComponent } from './basket/basket.component';
+import { FlightLookaheadComponent } from './flight-lookahead/flight-lookahead.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -35,6 +36,10 @@ export const APP_ROUTES: Routes = [
     data: {
       preload: true
     }
+  },
+  {
+    path: 'flight-lookahead',
+    component: FlightLookaheadComponent
   },
   {
     path: '**',

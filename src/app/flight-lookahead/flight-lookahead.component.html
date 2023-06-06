@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="header">
+    <h1 class="title">Lookahead</h1>
+  </div>
+
+  <div class="content">
+    <div class="control-group">
+      <label>From</label>
+      <input [formControl]="fromControl" class="form-control" />
+    </div>
+
+    <div class="control-group">
+      <label>To</label>
+      <input [formControl]="toControl" class="form-control" />
+    </div>
+
+    <div *ngIf="online$ | async; else isOffline" style="background-color: darkgreen">Online</div>
+    <ng-template #isOffline><div style="background-color: darkred">Offline</div></ng-template>
+
+    <div class="control-group">
+      <button class="btn btn-click" (click)="refresh()">Refresh</button>
+    </div>
+
+    <div *ngIf="isLoading">Loading ...</div>
+    <div *ngIf="!isLoading && (diff$ | async) as diff">Differenz: {{ diff }}</div>
+
+    <table class="table table-striped">
+      <tr *ngFor="let f of flights$ | async">
+        <td>{{ f.id }}</td>
+        <td>{{ f.from }}</td>
+        <td>{{ f.to }}</td>
+        <td>{{ f.date | date : 'dd.MM.yyyy HH:mm' }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
