@@ -13,8 +13,7 @@
         "plugin:@angular-eslint/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:prettier/recommended",
-        "plugin:@angular-eslint/recommended--extra"
+        "plugin:prettier/recommended"
       ],
       "rules": {
         "@angular-eslint/component-selector": [
@@ -34,7 +33,7 @@
           }
         ],
         "@angular-eslint/no-empty-lifecycle-method": "warn",
-        // "@angular-eslint/prefer-on-push-component-change-detection": "warn",
+        "@angular-eslint/prefer-on-push-component-change-detection": "off",
         "@typescript-eslint/naming-convention": [
           "warn",
           {
