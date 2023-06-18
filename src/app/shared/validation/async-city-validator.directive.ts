@@ -1,10 +1,8 @@
 import { Directive } from '@angular/core';
-import { AbstractControl, AsyncValidator, NG_ASYNC_VALIDATORS, ValidationErrors } from '@angular/forms';
-
-import { Observable } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { AsyncValidator, NG_ASYNC_VALIDATORS } from '@angular/forms';
 
 import { FlightService } from '../../flight-booking/flight.service';
+import { validateAsyncCity } from './async-city-validator';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
@@ -20,10 +18,5 @@ import { FlightService } from '../../flight-booking/flight.service';
 export class AsyncCityValidatorDirective implements AsyncValidator {
   constructor(private flightService: FlightService) {}
 
-  validate(c: AbstractControl): Observable<ValidationErrors | null> {
-    return this.flightService.find(c.value, '').pipe(
-      map((flights) => (flights.length > 0 ? null : { asyncCity: { value: c.value } })),
-      delay(2000) // <-- delay; can be removed later...
-    );
-  }
+  validate = validateAsyncCity(this.flightService);
 }
