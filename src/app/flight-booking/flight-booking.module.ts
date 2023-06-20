@@ -11,9 +11,6 @@ import { FlightBookingComponent } from './flight-booking.component';
 import { FlightEditComponent } from './flight-edit/flight-edit.component';
 import { FormsModule } from '@angular/forms';
 import { AirportComponent } from './airport/airport.component';
-import { FlightService } from './flight.service';
-import { createFlightService } from './flight-service.factory';
-import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   imports: [RouterModule.forChild(FLIGHT_BOOKING_ROUTES), FormsModule, SharedModule],
@@ -24,13 +21,6 @@ import { HttpClient } from '@angular/common/http';
     FlightBookingComponent,
     FlightEditComponent,
     AirportComponent
-  ],
-  providers: [
-    {
-      provide: FlightService,
-      useFactory: createFlightService,
-      deps: [HttpClient]
-    }
   ],
   exports: [FlightSearchComponent]
 })
