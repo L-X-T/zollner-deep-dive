@@ -11,6 +11,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { validateCity } from '../../shared/validation/city-validator';
 import { validateAsyncCity } from '../../shared/validation/async-city-validator';
 import { validateRoundTrip } from '../../shared/validation/round-trip-validator';
+import { validateAsyncMulti } from '../../shared/validation/async-multi-field-validator';
 
 @Component({
   selector: 'app-flight-edit',
@@ -40,14 +41,12 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanComponentDeact
       ],
       date: ['', [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
     },
-    { validators: validateRoundTrip }
+    { asyncValidators: validateAsyncMulti(this.flightService), validators: validateRoundTrip }
   );
 
   valueChangesSubscription?: Subscription;
 
-  constructor(private route: ActivatedRoute, private flightService: FlightService, private fb: FormBuilder, private router: Router) {
-    // this.editForm.validator = validateRoundTrip;
-  }
+  constructor(private route: ActivatedRoute, private flightService: FlightService, private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
     console.log(this.router.url);
